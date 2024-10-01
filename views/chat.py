@@ -1,32 +1,19 @@
 import streamlit as st
-import openai
+import google.generativeai as genai
 
-# Set the base URL and API key for the OpenAI client
-openai.api_base = "http://localhost:1234/v1"
-openai.api_key = "not-needed"
 
-# Hàm xử lý đầu vào từ người dùng
-def chatbot_response(message, history):
+def chatbot_response(chat,message, history):
     # Thêm câu hỏi vào lịch sử
     history.append((message, ""))
 
     # Prompt hệ thống để hướng dẫn chatbot trả lời liên quan đến nông nghiệp bằng tiếng Việt
     system_message = "Bạn là một chuyên gia về nông nghiệp ở Việt Nam. Hãy trả lời các câu hỏi liên quan đến trồng trọt, chăn nuôi, đánh bắt thuỷ sản, đất đai, thời tiết và các kỹ thuật nông nghiệp khác ở Việt Nam. Trả lời ngắn gọn và chính xác bằng tiếng Việt. Không nêu thêm thông tin bổ sung cho câu hỏi."
 
-    # Gọi OpenAI API để lấy phản hồi
-    response = openai.ChatCompletion.create(
-        model="local-model",
-        messages=[
-            {"role": "system", "content": system_message},
-            {"role": "user", "content": message}
-        ],
-        temperature=0.7,
-        top_p=0.9,
-        max_new_tokens=200
-    )
-
-    # Lấy phản hồi từ API
-    chatbot_reply = response.choices[0].message.content
+    response = chat.send_message(message, stream=True)
+    chatbot_reply = ""
+    for chunk in response:
+        if chunk.text:
+          chatbot_reply += chunk.text + " "
 
     # Cập nhật lịch sử với câu trả lời
     history[-1] = (message, chatbot_reply)
@@ -34,6 +21,11 @@ def chatbot_response(message, history):
     return history  # Trả về lịch sử
 
 def show():
+    # Set the base URL and API key for the OpenAI client
+    genai.configure(api_key='AIzaSyBqHLvnvATwKlnQEhmJQxM_BSAQolc0hg4')
+    model = genai.GenerativeModel('gemini-pro')
+    chat = model.start_chat(history=[])
+
     # Giao diện Streamlit
     st.title("Chatbot Nông Nghiệp")
 
@@ -62,7 +54,7 @@ def show():
     if st.button("Gửi"):
         if user_input:
             # Gọi hàm xử lý phản hồi và cập nhật lịch sử
-            st.session_state.history = chatbot_response(user_input, st.session_state.history)
+            st.session_state.history = chatbot_response(chat,user_input, st.session_state.history)
 
             # Làm trống ô nhập liệu
             st.text_input("Nhập câu hỏi của bạn...", "", key="new_input")
