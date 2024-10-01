@@ -33,45 +33,43 @@ def chatbot_response(message, history):
 
     return history  # Trả về lịch sử
 
-# Giao diện Streamlit
-st.title("Chatbot Nông Nghiệp")
+def show():
+    # Giao diện Streamlit
+    st.title("Chatbot Nông Nghiệp")
 
-# Khởi tạo hoặc lấy lịch sử trò chuyện
-if 'history' not in st.session_state:
-    st.session_state.history = []
+    # Khởi tạo hoặc lấy lịch sử trò chuyện
+    if 'history' not in st.session_state:
+        st.session_state.history = []
 
-# Tạo vùng cuộn để hiển thị lịch sử trò chuyện
-st.subheader("Lịch sử trò chuyện")
+    # Tạo vùng cuộn để hiển thị lịch sử trò chuyện
+    st.subheader("Lịch sử trò chuyện")
 
-# Vùng cuộn cho lịch sử trò chuyện
-chat_area = st.container()
-with chat_area:
-    # Hiển thị lịch sử trò chuyện trong một vùng cuộn
-    if st.session_state.history:
-        for user_message, bot_reply in st.session_state.history:
-            st.chat_message("user").markdown(user_message)
-            st.chat_message("assistant").markdown(bot_reply)
-    else:
-        st.markdown("Chưa có lịch sử trò chuyện.")
-
-# Ô nhập liệu cho người dùng
-user_input = st.text_input("Nhập câu hỏi của bạn...", "")
-
-# Nút gửi
-if st.button("Gửi"):
-    if user_input:
-        # Gọi hàm xử lý phản hồi và cập nhật lịch sử
-        st.session_state.history = chatbot_response(user_input, st.session_state.history)
-
-        # Làm trống ô nhập liệu
-        st.text_input("Nhập câu hỏi của bạn...", "", key="new_input")
-        st.rerun()
-        # Cập nhật lại lịch sử trò chuyện
-        with chat_area:
+    # Vùng cuộn cho lịch sử trò chuyện
+    chat_area = st.container()
+    with chat_area:
+        # Hiển thị lịch sử trò chuyện trong một vùng cuộn
+        if st.session_state.history:
             for user_message, bot_reply in st.session_state.history:
                 st.chat_message("user").markdown(user_message)
                 st.chat_message("assistant").markdown(bot_reply)
+        else:
+            st.markdown("Chưa có lịch sử trò chuyện.")
 
-# Chạy ứng dụng
-if __name__ == "__main__":
-    st.write("Ứng dụng chatbot nông nghiệp hoạt động!")
+    # Ô nhập liệu cho người dùng
+    user_input = st.text_input("Nhập câu hỏi của bạn...", "")
+
+    # Nút gửi
+    if st.button("Gửi"):
+        if user_input:
+            # Gọi hàm xử lý phản hồi và cập nhật lịch sử
+            st.session_state.history = chatbot_response(user_input, st.session_state.history)
+
+            # Làm trống ô nhập liệu
+            st.text_input("Nhập câu hỏi của bạn...", "", key="new_input")
+            st.rerun()
+            # Cập nhật lại lịch sử trò chuyện
+            with chat_area:
+                for user_message, bot_reply in st.session_state.history:
+                    st.chat_message("user").markdown(user_message)
+                    st.chat_message("assistant").markdown(bot_reply)
+

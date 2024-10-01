@@ -1,0 +1,38 @@
+import streamlit as st
+import time
+from utils import authenticate
+def show():
+    st.title("Đăng ký")
+    username = st.text_input("Tên đăng nhập")
+    password = st.text_input("Mật khẩu", type='password')
+    re_password = st.text_input("Nhập lại mật khẩu", type='password')
+    # Định nghĩa CSS để căn chỉnh button
+    button_style = """
+        <style>
+        div.stButton > button {
+        width : 100%;
+        border-radius: 10px;
+    }
+
+    div.stButton > button:hover {
+        width : 100%;
+    }
+        </style>
+    """
+
+    # Đưa CSS vào giao diện
+    st.markdown(button_style, unsafe_allow_html=True)
+    if st.button("Đăng ký"):
+        if authenticate.check_login(username, password):
+            st.success("Đăng ký thành công!")
+            st.session_state.page = "Login"  # Chuyển sang trang chính
+            time.sleep(1.5)
+            st.rerun()
+        else:
+            st.error("Vui lòng kiểm tra lại thông tin đăng ký.")
+            time.sleep(1.5)
+            st.rerun()
+    
+    if st.button("Trở lại đăng nhập",type="secondary"):
+        st.session_state.page = "Login"
+        st.rerun()
