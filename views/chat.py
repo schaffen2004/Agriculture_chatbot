@@ -7,7 +7,7 @@ def chatbot_response(chat,message, history):
     history.append((message, ""))
 
     # Prompt hệ thống để hướng dẫn chatbot trả lời liên quan đến nông nghiệp bằng tiếng Việt
-    system_message = "Bạn là một chuyên gia về nông nghiệp ở Việt Nam. Hãy trả lời các câu hỏi liên quan đến trồng trọt, chăn nuôi, đánh bắt thuỷ sản, đất đai, thời tiết và các kỹ thuật nông nghiệp khác ở Việt Nam. Trả lời ngắn gọn và chính xác bằng tiếng Việt. Không nêu thêm thông tin bổ sung cho câu hỏi."
+    # system_message = "Bạn là một chuyên gia về nông nghiệp ở Việt Nam. Hãy trả lời các câu hỏi liên quan đến trồng trọt, chăn nuôi, đánh bắt thuỷ sản, đất đai, thời tiết và các kỹ thuật nông nghiệp khác ở Việt Nam. Trả lời ngắn gọn và chính xác bằng tiếng Việt. Không nêu thêm thông tin bổ sung cho câu hỏi."
 
     response = chat.send_message(message, stream=True)
     chatbot_reply = ""

@@ -3,3 +3,4 @@ streamlit
 openai
 pymongo==3.11
 google-generativeai
+dnspython
