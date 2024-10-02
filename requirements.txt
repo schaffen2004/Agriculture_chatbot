@@ -8,3 +8,8 @@ pymongo[srv]==3.11
 Flask
 Flask-PyMongo
 requests
+plotly
+altair
+scikit-learn
+matplotlib
+seaborn

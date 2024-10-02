@@ -1,15 +1,19 @@
 import streamlit as st
 import time
-from views import chat
-
+from views import chat, prediction
 def show():
-    # Tạo thanh điều hướng ở bên trái
+    # Tạo thanh điều hướng ở sidebar
     st.sidebar.title("Trang chủ")
-    page = st.sidebar.selectbox("Vui lòng chọn chức năng mà bạn muốn sử dụng", ("Chatbot", "Giới Thiệu", "Liên Hệ"))
+    page = st.sidebar.selectbox("Vui lòng chọn chức năng mà bạn muốn sử dụng", 
+                                ("Chatbot", "Dự đoán"))
 
-    if 'home' not in st.session_state:
-        st.session_state.home = "Chat"  # Khởi tạo giá trị mặc định
+    # Điều hướng giữa các trang
+    if page == "Chatbot":
+        chat.show()
 
-    # Selectbox để chọn giữa đăng nhập và đăng ký
-    if st.session_state.home == "Chat":
-        chat.show()  # Gọi hàm login
+
+    elif page == "Dự đoán":
+        prediction.show()
+
+
+    
