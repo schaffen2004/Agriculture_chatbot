@@ -23,7 +23,8 @@ def chatbot_response(chat,message, history):
 def show():
     # Set the base URL and API key for the OpenAI client
     genai.configure(api_key='AIzaSyBqHLvnvATwKlnQEhmJQxM_BSAQolc0hg4')
-    model = genai.GenerativeModel('gemini-pro')
+    #gemini-pro
+    model = genai.GenerativeModel('gemini-1.5-flash')
     chat = model.start_chat(history=[])
 
     # Giao diện Streamlit
@@ -33,8 +34,6 @@ def show():
     if 'history' not in st.session_state:
         st.session_state.history = []
 
-    # Tạo vùng cuộn để hiển thị lịch sử trò chuyện
-    st.subheader("Lịch sử trò chuyện")
 
     # Vùng cuộn cho lịch sử trò chuyện
     chat_area = st.container()
