@@ -14,6 +14,6 @@ def show():
 
     elif page == "Dự đoán":
         prediction.show()
-
+ 
 
     

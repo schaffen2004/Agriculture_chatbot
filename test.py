@@ -1,98 +1,78 @@
-import streamlit as st 
-import pandas as pd 
-import numpy as np 
+import streamlit as st
+import google.generativeai as genai
 
-import matplotlib.pyplot as plt 
-import matplotlib  
-matplotlib.use('Agg')
-import seaborn as sns 
+def chatbot_response(chat, message, history):
+    # Thêm câu hỏi vào lịch sử
+    history.append((message, ""))
 
-from sklearn import model_selection
-from sklearn.linear_model import  LogisticRegression
-from sklearn.neighbors import  KNeighborsClassifier	
-from sklearn.naive_bayes  import GaussianNB
-from sklearn.svm import SVC
-from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
-from sklearn.tree import DecisionTreeClassifier
+    # Prompt hệ thống để hướng dẫn chatbot trả lời liên quan đến nông nghiệp và hiểu ngữ cảnh cuộc trò chuyện
+    system_message = (
+        "Bạn là một chuyên gia về nông nghiệp ở Việt Nam. "
+        "Hãy trả lời các câu hỏi liên quan đến trồng trọt, chăn nuôi, đánh bắt thuỷ sản, đất đai, "
+        "thời tiết và các kỹ thuật nông nghiệp khác ở Việt Nam. "
+        "Hãy nhớ nội dung cuộc trò chuyện trước đó để trả lời một cách phù hợp. "
+        "Trả lời ngắn gọn và chính xác bằng tiếng Việt, có thể giải thích chi tiết nếu cần thiết. "
+        "Nếu không rõ câu hỏi, hãy yêu cầu người dùng cung cấp thêm chi tiết."
+    )
 
-def main():
+    # Chuẩn bị lịch sử trò chuyện cho chatbot để hiểu ngữ cảnh
+    context = ""
+    for user_message, bot_reply in history:
+        context += f"Người dùng: {user_message}\nChatbot: {bot_reply}\n"
 
-	st.title('Visualizer')
-	st.text('Built with Streamlit')
-	activities = ["EDA","Plot","Model Building","About"]
+    # Gửi prompt và thông điệp người dùng tới chatbot kèm ngữ cảnh
+    response = chat.send_message(system_message + "\n\n" + context + "Người dùng: " + message, stream=True)
+    chatbot_reply = ""
+    for chunk in response:
+        if chunk.text:
+            chatbot_reply += chunk.text + " "
 
-	choice = st.sidebar.selectbox("Select Activity",activities)
+    # Cập nhật lịch sử với câu trả lời
+    history[-1] = (message, chatbot_reply.strip())
 
-	if choice == 'EDA' : 
-		
-		st.subheader("Exploratory Data Analysis!!")
-		data = st.file_uploader("Upload Dataset",type = ["csv","txt","xls"])		
-		if data is not None:
-			df = pd.read_csv(data)
-			st.dataframe(df.head())
+    return history  # Trả về lịch sử
 
-			if st.checkbox("Show shape"):
-				st.write(df.shape)
+def show():
+    # Cấu hình API key và mô hình Gemini
+    genai.configure(api_key='AIzaSyBqHLvnvATwKlnQEhmJQxM_BSAQolc0hg4')
+    model = genai.GenerativeModel('gemini-1.5-flash')
+    chat = model.start_chat(history=[])
 
-			if st.checkbox("Show Columns"):
-				all_columns = df.columns.to_list()
-				st.write(all_columns)
+    # Giao diện Streamlit
+    st.title("Chatbot Nông Nghiệp Việt Nam")
 
-			if st.checkbox("Select Columns To Show"):
-				selected_columns = st.multiselect("Select Columns",all_columns)
-				new_df = df[selected_columns]
-				st.dataframe(new_df)
+    # Khởi tạo hoặc lấy lịch sử trò chuyện
+    if 'history' not in st.session_state:
+        st.session_state.history = []
 
-			if st.checkbox("Show Summary"):
-				st.write(df.describe())
+    # Vùng cuộn cho lịch sử trò chuyện
+    chat_area = st.container()
+    with chat_area:
+        # Hiển thị lịch sử trò chuyện
+        if st.session_state.history:
+            for user_message, bot_reply in st.session_state.history:
+                st.chat_message("user").markdown(user_message)
+                st.chat_message("assistant").markdown(bot_reply)
+        else:
+            st.markdown("Chưa có lịch sử trò chuyện.")
 
-			if st.checkbox("Show Value Counts"):
-				st.write(df.iloc[:,-1].value_counts()) # select the target columns..assuming last columns is target columns
+    # Ô nhập liệu cho người dùng
+    user_input = st.text_input("Nhập câu hỏi của bạn...", "")
 
+    # Nút gửi
+    if st.button("Gửi"):
+        if user_input:
+            # Gọi hàm xử lý phản hồi và cập nhật lịch sử
+            st.session_state.history = chatbot_response(chat, user_input, st.session_state.history)
 
-	elif choice == 'Plot' : 
-		st.subheader("Data Visualization")
+            # Làm trống ô nhập liệu và cập nhật lại giao diện
+            st.text_input("Nhập câu hỏi của bạn...", "", key="new_input")
+            st.rerun()
 
-		data = st.file_uploader("Upload Dataset",type = ["csv","txt","xls"])		
-		if data is not None:
-			df = pd.read_csv(data)
-			st.dataframe(df.head())
+            # Cập nhật lại lịch sử trò chuyện
+            with chat_area:
+                for user_message, bot_reply in st.session_state.history:
+                    st.chat_message("user").markdown(user_message)
+                    st.chat_message("assistant").markdown(bot_reply)
 
-		if st.checkbox("Correlation with Seaborn"):
-			st.write(sns.heatmap(df.corr(),annot = True))
-			st.pyplot()
-
-		if st.checkbox("Pie chart"):
-			all_columns = df.columns.to_list()
-			columns_to_plot = st.selectbox("Select Column",all_columns)
-			pie_plot = df[columns_to_plot].value_counts().plot.pie(autopct = "%1.1f%%")
-			st.write(pie_plot)
-			st.pyplot()
-
-		all_columns_names = df.columns.to_list()
-		type_of_plot = st.selectbox("Select type of Plot",["area","bar","line","hist","box","kde"])
-		selected_columns_names = st.multiselect("Select Columns To Plot",all_columns_names)
-
-		if st.button("Generate Plot"):
-			st.success("Generating Customizable Plot {} for {}".format(type_of_plot,selected_columns_names))
-
-			if type_of_plot == 'area':
-				collect_data = df[selected_columns_names]
-				st.area_chart(collect_data)				
-			elif type_of_plot == 'bar':
-				collect_data = df[selected_columns_names]
-				st.bar_chart(collect_data)
-
-			elif type_of_plot == 'line':
-				collect_data = df[selected_columns_names]
-				st.line_chart(collect_data)
-
-			elif type_of_plot:
-				collect_data = df[selected_columns_names].plot(kind = type_of_plot)
-				st.write(collect_data)
-				st.pyplot()
-
-
-if __name__ == '__main__':
-	main()
 
