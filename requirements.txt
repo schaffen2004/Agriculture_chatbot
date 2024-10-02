@@ -4,3 +4,7 @@ openai
 pymongo==3.11
 google-generativeai
 dnspython
+pymongo[srv]==3.11
+Flask
+Flask-PyMongo
+requests
