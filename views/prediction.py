@@ -46,5 +46,5 @@ def show():
     col1, col2, col3 = st.columns(3)
 
     col1.metric("Dự đoán", f"{year_pred[0]:.2f}", f"{year_input}")
-    col2.metric("So với năm 2022",f"{year_pred[0]-data_2022:.2f}",f"{((year_pred[0]-data_2022)*100/data_2022):.2f} %")
-    col3.metric("So với trung bình các năm",f"{year_pred[0]-mean_years:.2f}",f"{((year_pred[0]-mean_years)*100/mean_years):.2f} %")
+    col2.metric("So với năm 2022",f"{(year_pred[0]-data_2022):.2f}",f"{((year_pred[0]-data_2022)*100/data_2022):.2f} %")
+    col3.metric("So với trung bình các năm",f"{(year_pred[0]-mean_years):.2f}",f"{((year_pred[0]-mean_years)*100/mean_years):.2f} %")
