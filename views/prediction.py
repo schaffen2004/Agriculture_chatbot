@@ -11,7 +11,7 @@ def show():
     data = pd.read_csv('data/banana.csv')
 
     # Streamlit app title
-    st.title("Dự đoán thông tin liên quan về tình hình sản xuất chuối ở Việt Nam")
+    st.title("Dự đoán thông tin liên quan về tình hình sản xuất quả chuối ở Việt Nam")
 
     # Select the feature to predict
     feature = st.selectbox("Vui lòng chọn thông tin muốn dự đoán:", data.columns[3:])
@@ -38,4 +38,13 @@ def show():
     # Predict for a given year
     year_input = st.number_input("Chọn năm muốn đưa ra:", min_value=2023, max_value=2030, value=2025)
     year_pred = model.predict([[year_input]])
-    st.write(f"Dự đoán {feature} cho {year_input}: {year_pred[0]:.2f}")
+    # st.write(f"Dự đoán {feature} cho {year_input}: {year_pred[0]:.2f}")
+    
+    data_2022= data[data['Year']==2022][feature].values[0]
+    mean_years = data[feature].mean()
+
+    col1, col2, col3 = st.columns(3)
+
+    col1.metric("Dự đoán", f"{year_pred[0]:.2f}", f"{year_input}")
+    col2.metric("So với năm 2022",f"{year_pred[0]-data_2022:.2f}",f"{((year_pred[0]-data_2022)*100/data_2022):.2f} %")
+    col3.metric("So với trung bình các năm",f"{year_pred[0]-mean_years:.2f}",f"{((year_pred[0]-mean_years)*100/mean_years):.2f} %")
