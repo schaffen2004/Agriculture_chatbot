@@ -15,6 +15,27 @@ def show():
     st.header('Dữ liệu')
     st.write(df)
 
+    # Calculate percentage of missing and non-missing data
+    missing_percentage = df.isnull().mean() * 100
+    non_missing_percentage = 100 - missing_percentage
+
+    # Data for the stacked bar chart
+    data = pd.DataFrame({
+        'Missing': missing_percentage,
+        'Non-Missing': non_missing_percentage
+    })
+
+    st.title("Giá trị bị thiếu")
+    st.write(missing_percentage[missing_percentage > 0].round(2))
+    # Stacked bar chart of missing values
+    st.header('Stacked Bar Chart of Missing Values (%)')
+    fig, ax = plt.subplots(figsize=(10, 6))
+    data.plot(kind='bar', stacked=True, ax=ax, color=['red', 'green'])
+    plt.ylabel('Percentage (%)')
+    plt.title('Missing vs Non-Missing Data by Column')
+    plt.xticks(rotation=45, ha='right')
+    st.pyplot(fig)
+
     # Summary statistics
     st.header('Thống kê')
     st.write(df.describe())
@@ -36,6 +57,8 @@ def show():
     year = st.slider('Chọn năm', int(df['Year'].min()), int(df['Year'].max()))
     filtered_data = df[df['Year'] == year]
     st.write(filtered_data)
+
+
 
 
 

@@ -7,35 +7,34 @@ import seaborn as sns
 data_path = 'data/banana.csv'
 df = pd.read_csv(data_path)
 
-# Title and description
-st.title('Banana Production EDA')
-st.write("This app performs exploratory data analysis on the banana production dataset.")
+# Title
+st.title('Missing Data Analysis')
 
-# Display the raw data
+# Display raw data
 st.header('Raw Data')
 st.write(df)
 
-# Summary statistics
-st.header('Summary Statistics')
-st.write(df.describe())
+# Calculate percentage of missing and non-missing data
+missing_percentage = df.isnull().mean() * 100
+non_missing_percentage = 100 - missing_percentage
 
-# Select columns for visualization
-columns = df.columns[1:]  # Exclude the index column
-selected_column = st.selectbox('Select a column to visualize', columns)
+# Data for the stacked bar chart
+data = pd.DataFrame({
+    'Missing': missing_percentage,
+    'Non-Missing': non_missing_percentage
+})
 
-# Line plot of selected column over the years
-st.subheader(f'{selected_column} Over Time')
-fig, ax = plt.subplots()
-sns.lineplot(x='Year', y=selected_column, data=df, ax=ax)
-plt.xticks(rotation=45)
+st.title("Missing value")
+st.write(missing_percentage[missing_percentage > 0].round(2))
+# Stacked bar chart of missing values
+st.header('Stacked Bar Chart of Missing Values (%)')
+fig, ax = plt.subplots(figsize=(10, 6))
+data.plot(kind='bar', stacked=True, ax=ax, color=['red', 'green'])
+plt.ylabel('Percentage (%)')
+plt.title('Missing vs Non-Missing Data by Column')
+plt.xticks(rotation=45, ha='right')
 st.pyplot(fig)
 
-
-# Filter data by year
-st.header('Filter Data by Year')
-year = st.slider('Select year', int(df['Year'].min()), int(df['Year'].max()))
-filtered_data = df[df['Year'] == year]
-st.write(filtered_data)
-
-
+# Conclusion
+st.write("The stacked bar chart represents the percentage of missing and non-missing data for each column.")
 
