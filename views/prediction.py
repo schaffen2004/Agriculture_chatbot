@@ -14,7 +14,7 @@ def show():
     st.title("Dự đoán thông tin liên quan về tình hình sản xuất quả chuối ở Việt Nam")
 
     # Select the feature to predict
-    feature = st.selectbox("Vui lòng chọn thông tin muốn dự đoán:", data.columns[3:])
+    feature = st.selectbox("Vui lòng chọn thông tin muốn dự đoán:", data.columns[1:])
 
     # Select the Machine Learning model
     model_choice = st.selectbox("Vui lòng chọn mô hình để dự đoán:", ["Linear Regression", "Random Forest", "Support Vector Regressor"])
