@@ -28,11 +28,11 @@ def show():
     st.title("Giá trị bị thiếu")
     st.write(missing_percentage[missing_percentage > 0].round(2))
     # Stacked bar chart of missing values
-    st.header('Stacked Bar Chart of Missing Values (%)')
+    st.header('Biểu đồ biểu thị giá trị bị thiếu theo phần trăm (%)')
     fig, ax = plt.subplots(figsize=(10, 6))
     data.plot(kind='bar', stacked=True, ax=ax, color=['red', 'green'])
-    plt.ylabel('Percentage (%)')
-    plt.title('Missing vs Non-Missing Data by Column')
+    plt.ylabel('Phần trăm (%)')
+    plt.title('Số lượng giá trị bị thiếu by Column')
     plt.xticks(rotation=45, ha='right')
     st.pyplot(fig)
 
@@ -57,8 +57,3 @@ def show():
     year = st.slider('Chọn năm', int(df['Year'].min()), int(df['Year'].max()))
     filtered_data = df[df['Year'] == year]
     st.write(filtered_data)
-
-
-
-
-
