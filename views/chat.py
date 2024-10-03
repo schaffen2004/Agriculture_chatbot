@@ -75,4 +75,3 @@ def show():
                     st.chat_message("user").markdown(user_message)
                     st.chat_message("assistant").markdown(bot_reply)
 
-
