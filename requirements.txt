@@ -13,3 +13,4 @@ altair
 scikit-learn
 matplotlib
 seaborn
+statsmodels
